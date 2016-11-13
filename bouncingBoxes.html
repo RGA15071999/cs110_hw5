@@ -1,54 +1,59 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Canvas Test</title>
-	</head>
-	<body>
+<head>
+	<title>Fancy Canvas</title>
+  <style>
+    #my-canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas height="500" width="500" id="my-canvas"></canvas>
+  <script>
+    const canvas = document.getElementById('my-canvas');
+    const context = canvas.getContext('2d');
 
+    const NumberOfPoints = 15;
+    const points = [];
 
-	<canvas id="canvas" width="500" height="300"></canvas>
+    for(let i = 0; i < NumberOfPoints; i++) {
+      const size = Math.random() * 100;
+      points.push({
+        height: size,
+        width: size,
+        x: Math.random()*(canvas.height-2*size),
+        y: Math.random()*(canvas.width-2*size),
+        xDir: 1,
+        yDir: 1,
+        color: `rgb(${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)})`
+      })
+    }
 
-	<script>
-		let canvas = document.getElementById("canvas");
-		let context = canvas.getContext("2d");
-		const NUM_POINTS = 5;
-		const points = [];
+    const draw = function() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      points.forEach(function(thisPoint) {
+        context.fillStyle = thisPoint.color;
+        context.fillRect(thisPoint.x, thisPoint.y, thisPoint.width, thisPoint.height);
+        thisPoint.x += thisPoint.xDir;
+        thisPoint.y += thisPoint.yDir;
+        const thresholdX = thisPoint.x + thisPoint.width;
+        const thresholdY = thisPoint.y + thisPoint.height;
+        if(thresholdX >= canvas.width || thisPoint.x <= 0) {
+          thisPoint.xDir *= -1;
+        }
+        if(thresholdY >= canvas.height || thisPoint.y <= 0) {
+          thisPoint.yDir *= -1;
+        }
+      });
+    };
 
-		for(let i = 0; i < NUM_POINTS; i++) {
-		  points.push({
-		    x: Math.random() * canvas.width,
-		    y: Math.random() * canvas.height,
-		    width: 20,
-		    height: 20,
-		    xDelta: 1,
-		    yDelta: 1,
-		    color: `rgb(${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)})`
-		  });
-		}
+    const animate = function() {
+      draw()
+      setTimeout(animate, 10);
+    }
 
-		const draw = function() {
-			context.clearRect(0, 0, canvas.width, canvas.height);
-			points.forEach( function(currPoint) {
-				context.fillStyle = currPoint.color;
-				context.fillRect(currPoint.x, currPoint.y, currPoint.width, currPoint.height);
-				currPoint.x += currPoint.xDelta;
-				currPoint.y += currPoint.yDelta;
-			 	if(currPoint.x+currPoint.width >= 500 || currPoint.x <= 0) {
-			 		currPoint.xDelta *= -1;
-				}
-				if(currPoint.y+currPoint.height >= 300 || currPoint.y <= 0) {
-			 		currPoint.yDelta *= -1;
-				}
-			});
-		};
-
-		let animate = function() {
-		  draw();
-		  setTimeout(animate, 10);
-		};
-
-		animate();
-	</script>
-
-	</body>
+    animate();
+  </script>
+</body>
 </html>
